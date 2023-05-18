@@ -1,0 +1,24 @@
+﻿@page "/Actors"
+@using SEP6.Data.Actors;
+@using SEP6.Models;
+@inject IActorService ActorService
+
+<h3>Actors</h3>
+<MudText>@someActor.Name</MudText>
+
+@code {
+    private List<Actor> someActors = new List<Actor>();
+    private Actor someActor = new Actor();
+    private int actorId = 32;
+
+    protected override async Task OnInitializedAsync()
+    {
+        someActor = await GetActor(actorId);
+    } 
+
+    private async Task<Actor> GetActor(int id)
+    {
+        var result = await ActorService.GetActorByID(id);
+        return result;
+    }
+}

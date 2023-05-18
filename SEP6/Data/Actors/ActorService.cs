@@ -5,7 +5,7 @@ namespace SEP6.Data.Actors
 {
     public class ActorService : IActorService
     {
-        string url = "https://localhost:7154/actor";
+        string url = "https://localhost:7178/actor";
         HttpClient client;
         private int actorId = 0;
 
