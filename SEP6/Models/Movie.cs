@@ -16,9 +16,9 @@
 
         public string releaseDate { get; set; }
 
-        public float Rating { get; set; }
+        public float? Rating { get; set; }
 
-        public int NrOfVotes { get; set; }
+        public int? NrOfVotes { get; set; }
 
 
         
