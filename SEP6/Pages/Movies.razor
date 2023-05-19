@@ -4,14 +4,24 @@
 @inject IMovieService MovieService
 
 <h3>Movies</h3>
+<input type="text" @bind="UserInput" />
+<p>You entered: @UserInput</p>
+<button @onclick="SubmitForm">Submit</button>
 
-<MudText>@someMovie.title</MudText>
+
+@if(@oneMovie.Movies != null)
+{
+    <MudText>@oneMovie.Movies.Count</MudText>
+}
 
 
 @code {
     private List<Movie> someMovies = new List<Movie>();
     private Movie someMovie = new Movie();
+
+    private ListOfMovies oneMovie = new ListOfMovies();
     private int movieId = 15;
+    public string UserInput { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -22,6 +32,17 @@
     {
         var result = await MovieService.GetMovieByID(id);
         return result;
+    }
+    private async Task<ListOfMovies> SearchMovie(int page, string title)
+    {
+        var result = await MovieService.GetMoviesBySearch(page, title);
+        return result;
+    }
+
+    private async Task SubmitForm()
+    {
+        oneMovie = await SearchMovie(1, UserInput);
+        StateHasChanged();
     }
 
 }
