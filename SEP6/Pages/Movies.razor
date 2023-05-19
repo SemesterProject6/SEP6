@@ -1,0 +1,27 @@
+﻿@page "/Movies"
+@using SEP6.Data.Movies;
+@using SEP6.Models;
+@inject IMovieService MovieService
+
+<h3>Movies</h3>
+
+<MudText>@someMovie.title</MudText>
+
+
+@code {
+    private List<Movie> someMovies = new List<Movie>();
+    private Movie someMovie = new Movie();
+    private int movieId = 15;
+
+    protected override async Task OnInitializedAsync()
+    {
+        someMovie = await GetMovie(movieId);
+    }
+
+    private async Task<Movie> GetMovie(int id)
+    {
+        var result = await MovieService.GetMovieByID(id);
+        return result;
+    }
+
+}

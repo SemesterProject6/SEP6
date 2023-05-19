@@ -6,7 +6,7 @@ namespace SEP6.Data.Movies
     public class MovieService : IMovieService
     {
 
-        string url = "https://localhost:7154/movie";
+        string url = "https://localhost:7178/movie";
 
         HttpClient client;
         private int movieId = 0;
