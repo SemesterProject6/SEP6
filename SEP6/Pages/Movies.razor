@@ -7,19 +7,39 @@
 <input type="text" @bind="UserInput" />
 <p>You entered: @UserInput</p>
 <button @onclick="SubmitForm">Submit</button>
-
-
-@if(@oneMovie.Movies != null)
+@if (movieList.Movies != null)
 {
-    <MudText>@oneMovie.Movies.Count</MudText>
-}
+<MudGrid>
+    <MudItem xs="2">
 
+    </MudItem>
+    <MudItem xs="10">
+        <MudGrid>
+         @foreach (var m in movieList.Movies)
+         {
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardMedia Image="@GetMoviePoster(m.PosterRoute)" Height="300" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@m.Title</MudText>
+                    </MudCardContent>
+                    @*<MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                </MudCardActions>*@
+                </MudCard>
+            </MudItem>
+         }
+        </MudGrid>
+    </MudItem>
+</MudGrid>
+}
 
 @code {
     private List<Movie> someMovies = new List<Movie>();
     private Movie someMovie = new Movie();
 
-    private ListOfMovies oneMovie = new ListOfMovies();
+    private ListOfMovies movieList = new ListOfMovies();
     private int movieId = 15;
     public string UserInput { get; set; } = "";
 
@@ -41,8 +61,14 @@
 
     private async Task SubmitForm()
     {
-        oneMovie = await SearchMovie(1, UserInput);
+        movieList = await SearchMovie(1, UserInput);
         StateHasChanged();
+    }
+
+    public string GetMoviePoster(string path)
+    {
+        string moviePoster = "http://image.tmdb.org/t/p/w500/";
+        return moviePoster + path;
     }
 
 }
