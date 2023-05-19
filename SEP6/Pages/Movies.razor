@@ -7,32 +7,39 @@
 <input type="text" @bind="UserInput" />
 <p>You entered: @UserInput</p>
 <button @onclick="SubmitForm">Submit</button>
-
-<MudText>@someMovie.title</MudText>
+@if (movieList.Movies != null)
+{
 <MudGrid>
     <MudItem xs="2">
 
     </MudItem>
-    <MudItem xs="2">
-        <MudCard>
-            <MudCardMedia Image="https://prod.cdn.bbaws.net/TDC_Blockbuster_-_Production/41/856/EG-16002_po-reg-medium_orig-1571302574988.jpg" Height="240" />
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Midsommar</MudText>
-            </MudCardContent>
-            @*<MudCardActions>
+    <MudItem xs="10">
+        <MudGrid>
+         @foreach (var m in movieList.Movies)
+         {
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardMedia Image="@GetMoviePoster(m.PosterRoute)" Height="300" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@m.Title</MudText>
+                    </MudCardContent>
+                    @*<MudCardActions>
                 <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
                 <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-            </MudCardActions>*@
-        </MudCard>
+                </MudCardActions>*@
+                </MudCard>
+            </MudItem>
+         }
+        </MudGrid>
     </MudItem>
 </MudGrid>
-
+}
 
 @code {
     private List<Movie> someMovies = new List<Movie>();
     private Movie someMovie = new Movie();
 
-    private ListOfMovies oneMovie = new ListOfMovies();
+    private ListOfMovies movieList = new ListOfMovies();
     private int movieId = 15;
     public string UserInput { get; set; } = "";
 
@@ -54,8 +61,14 @@
 
     private async Task SubmitForm()
     {
-        oneMovie = await SearchMovie(1, UserInput);
+        movieList = await SearchMovie(1, UserInput);
         StateHasChanged();
+    }
+
+    public string GetMoviePoster(string path)
+    {
+        string moviePoster = "http://image.tmdb.org/t/p/w500/";
+        return moviePoster + path;
     }
 
 }
