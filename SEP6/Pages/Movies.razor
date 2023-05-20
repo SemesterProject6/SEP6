@@ -31,7 +31,10 @@
             </MudItem>
          }
         </MudGrid>
-    </MudItem>
+            <div class="d-flex flex-column align-center">
+                <MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@currentPage"  onchange="@SubmitForm()" />
+            </div>
+    </MudItem>   
 </MudGrid>
 }
 
@@ -42,6 +45,24 @@
     private ListOfMovies movieList = new ListOfMovies();
     private int movieId = 15;
     public string UserInput { get; set; } = "";
+    public int currentPage = 1;
+    // 
+    // {
+    //    get
+    //    {
+    //        if (currentPage == 0)
+    //        {
+    //            return 1;
+    //        }
+    //        return currentPage;
+    //    } 
+    //    set
+    //    {
+    //        currentPage = value;
+    //        SubmitForm();
+    //    }
+    //}
+    public int totalPages;
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,13 +77,14 @@
     private async Task<ListOfMovies> SearchMovie(int page, string title)
     {
         var result = await MovieService.GetMoviesBySearch(page, title);
+        currentPage = result.CurrentPage;
+        totalPages = result.TotalPage;
         return result;
     }
 
     private async Task SubmitForm()
     {
-        movieList = await SearchMovie(1, UserInput);
-        StateHasChanged();
+        movieList = await SearchMovie(currentPage, UserInput);
     }
 
     public string GetMoviePoster(string path)
