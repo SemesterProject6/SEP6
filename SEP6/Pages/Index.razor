@@ -1,7 +1,63 @@
 ﻿@page "/"
+@using SEP6.Data.Movies;
+@using SEP6.Models;
+@inject IMovieService MovieService
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Top Movies</h1>
+@if (movieList.Movies != null)
+{
+    <MudGrid>
+
+        <MudItem xs="2">
+
+        </MudItem>
+        <MudItem xs="10">
+            <MudGrid>
+                @foreach (var m in movieList.Movies)
+                {
+                    <MudItem xs="3">
+                        <MudCard>
+                            <MudCardMedia Image="@GetMoviePoster(m.PosterRoute)" Height="300" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@m.Title</MudText>
+                            </MudCardContent>
+                            @*<MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                    </MudCardActions>>*@
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+}
 
 
+@code {
+    private ListOfMovies movieList = new ListOfMovies();
+    private int currentPage = 1;
+    protected override async Task OnInitializedAsync()
+    {
+        movieList = await MovieService.GetMoviesByRating(currentPage);
+    }
+    
+    private async Task<ListOfMovies> GetMovies(int page)
+    {
+        ListOfMovies result = new ListOfMovies();
+       
+        return result;
+    }
+    private async Task<Movie> GetMovie(int id)
+    {
+        var result = await MovieService.GetMovieByID(id);
+        return result;
+    }
+    public string GetMoviePoster(string path)
+    {
+        string moviePoster = "http://image.tmdb.org/t/p/w500/";
+        return moviePoster + path;
+    }
+}

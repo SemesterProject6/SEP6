@@ -39,14 +39,18 @@ namespace SEP6.Data.Movies
             return results;
         }
 
-        public Task<ListOfMovies> GetMoviesByRating(int page)
+        public async Task<ListOfMovies> GetMoviesByRating(int page)
         {
-            throw new NotImplementedException();
+            string message = await client.GetStringAsync(url + "/ByRating?page=" + page);
+            ListOfMovies results = JsonSerializer.Deserialize<ListOfMovies>(message);
+            return results;
         }
 
-        public Task<ListOfMovies> GetMoviesByTitle(int page)
+        public async Task<ListOfMovies> GetMoviesByTitle(int page)
         {
-            throw new NotImplementedException();
+            string message = await client.GetStringAsync(url + "/ByTitle?page=" + page);
+            ListOfMovies results = JsonSerializer.Deserialize<ListOfMovies>(message);
+            return results;
         }
     }
 }
