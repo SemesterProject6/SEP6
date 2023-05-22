@@ -1,5 +1,7 @@
-﻿<h3>MovieDetails</h3>
+﻿@page "/MoviesDetails/{Id}"
+<h3>MovieDetails @Id</h3>
 
 @code {
-
+    [Parameter]
+    public string Id { get; set; }
 }
