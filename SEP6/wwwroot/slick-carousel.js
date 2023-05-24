@@ -23,6 +23,8 @@ function initSlickCarousel() {
             },
         ],
     });
+
+    $('.single-item').slick();
 }
 
 function initActorCarousel(carouselId) {
