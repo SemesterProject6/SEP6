@@ -11,6 +11,10 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
+    <!-- Add the Slick Carousel CSS files -->
+    <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -23,8 +27,27 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+
+    <!-- Add the Slick Carousel JavaScript files -->
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script>
+        // Add script to initialize the Slick Carousel
+        function initActorCarousel() {
+            // Add initialization code here
+            // For example:
+            $('.slick-carousel').slick({
+                //carousel configuration options
+            });
+        }
+
+        // Call the initActorCarousel function when Blazor is ready
+        window.addEventListener('load', function () {
+            initActorCarousel();
+        });
+    </script>
 </body>
 
 </html>

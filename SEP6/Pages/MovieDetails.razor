@@ -1,7 +1,119 @@
 ﻿@page "/MoviesDetails/{Id}"
+@using SEP6.Data.Actors;
+@using SEP6.Data.Movies;
+@using SEP6.Models;
+@inject IActorService ActorService
+@inject IMovieService MovieService
+@inject IJSRuntime JSRuntime
+
 <h3>MovieDetails @Id</h3>
+
+@if (movie != null)
+{
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="@GetMoviePoster(movie.PosterRoute)" class="img-fluid rounded-lg" alt="Movie Poster">
+            </div>
+            <div class="col-md-8">
+                <h4>@movie.Title</h4>
+                <p>@movie.Overview</p>
+                <h5>Actors:</h5>
+                <div id="actorCarousel" class="slick-carousel">
+                    @foreach (Actor actor in actors)
+                    {
+                        <div class="actor-item">
+                            <img src="@GetActorImage(actor.ProfilePath)" alt="@actor.Name" />
+                            <p>@actor.Name</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Movie details not found.</p>
+}
 
 @code {
     [Parameter]
     public string Id { get; set; }
+    private Movie movie;
+    private Credits credit;
+    private List<Actor> actors = new List<Actor>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var movieId = int.Parse(Id); // Parse the ID string to an integer
+        movie = await GetMovie(movieId); // Call the GetMovie method with the movie ID
+
+        if (movie != null)
+        {
+            credit = await GetCreditsByMovie(movieId);
+
+            if (credit != null && credit.Actors != null)
+            {
+                actors.AddRange(credit.Actors);
+            }
+        }
+    }
+
+    private async Task<Movie> GetMovie(int id)
+    {
+        try
+        {
+            return await MovieService.GetMovieByID(id);
+        }
+        catch (Exception ex)
+        {
+            // Handle the exception or log the error
+            Console.WriteLine($"Failed to get movie: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<Credits> GetCreditsByMovie(int id)
+    {
+        try
+        {
+            return await MovieService.GetCreditsByMovieId(id);
+        }
+        catch (Exception ex)
+        {
+            // Handle the exception or log the error
+            Console.WriteLine($"Failed to get movie credits: {ex.Message}");
+            return null;
+        }
+    }
+
+    public string GetMoviePoster(string path)
+    {
+        string moviePoster = "http://image.tmdb.org/t/p/w500/";
+        return moviePoster + path;
+    }
+
+    public string GetActorImage(string path)
+    {
+        string actorImage = "http://image.tmdb.org/t/p/w500/";
+        return actorImage + path;
+    }
+
+    public async Task ActorSelected(int id)
+    {
+        ActorService.SetActorId(id);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initSlickCarousel");
+
+            // Manually initialize the Slick Carousel for the actorCarousel element
+            await JSRuntime.InvokeVoidAsync("initActorCarousel", "actorCarousel");
+        }
+    }
+
 }

@@ -13,5 +13,6 @@ namespace SEP6.Data.Movies
         void SetMovieId(int id);
         int GetMovieId();
         Task<ListOfMovies> GetMoviesBySearch(int page, string query);
+        Task<Credits> GetCreditsByMovieId(int movieId);
     }
 }
