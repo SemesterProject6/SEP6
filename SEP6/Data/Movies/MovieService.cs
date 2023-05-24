@@ -52,5 +52,11 @@ namespace SEP6.Data.Movies
             ListOfMovies results = JsonSerializer.Deserialize<ListOfMovies>(message);
             return results;
         }
+        public async Task<Credits> GetCreditsByMovieId(int movieId)
+        {
+            string message = await client.GetStringAsync(url + "/" + movieId + "/credits");
+            Credits result = JsonSerializer.Deserialize<Credits>(message);
+            return result;
+        }
     }
 }
