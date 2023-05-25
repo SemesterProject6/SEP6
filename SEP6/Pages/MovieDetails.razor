@@ -17,16 +17,6 @@
                 <h4>@movie.Title</h4>
                 <p>@movie.Overview</p>
                 <h5>Actors:</h5>
-@*                <div class="single-item">
-                    <div>your content</div>
-                    <div>your content</div>
-                    <div>your content</div>
-                </div>
-                <div id="actorCarousel" class="slick-carousel">
-                    
-                </div>*@
-          @*      <MudGrid>
-                    <MudItem>*@
                     <div class="d-flex justify-content-center">
                         <div id="actorsCarousel" class="carousel slide" data-ride="carousel">
                             <div class="carousel-inner">
@@ -62,20 +52,6 @@
                             <span class="sr-only">Next</span>
                         </a>
                     </div>
-                @*    </MudItem>
-                </MudGrid>*@
-
-                @*<MudCarousel Style="height:500px; width:100%" ShowArrows="true" ShowDelimiters="true" AutoCycle="true" TData="object">
-                    @foreach (Actor actor in actors)
-                    {
-                        <MudCarouselItem Transition="Transition.Fade" Color="@Color.Transparent">
-                            <div class="actor-item">
-                                <img src="@GetActorImage(actor.ProfilePath)" alt="@actor.Name" width="200" height="300">
-                                <p>@actor.Name</p>
-                            </div>
-                        </MudCarouselItem>
-                    }
-                </MudCarousel>*@
             </div>
         </div>
     </div>
@@ -160,9 +136,6 @@ else
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("initSlickCarousel");
-
-            // Manually initialize the Slick Carousel for the actorCarousel element
-            //await JSRuntime.InvokeVoidAsync("initActorCarousel", "actorCarousel");
         }
     }
 
