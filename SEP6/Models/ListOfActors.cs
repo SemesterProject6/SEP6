@@ -11,6 +11,6 @@ namespace SEP6.Models
         public List<Actor>? Actors { get; set; }
 
         [JsonPropertyName("total_pages")]
-        public int TotalPage { get; set; }
+        public int TotalPages { get; set; }
     }
 }

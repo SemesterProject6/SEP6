@@ -2,23 +2,75 @@
 @using SEP6.Data.Actors;
 @using SEP6.Models;
 @inject IActorService ActorService
+@inject NavigationManager NavigationManager
 
-<h3>Actors</h3>
-<MudText>@someActor.Name</MudText>
+<h3>Popular actors</h3>
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-12" style="max-height: 100vh; overflow-y: auto;">
+            @if (actorList?.Actors != null)
+            {
+                <div class="row">
+                    @foreach (var actor in actorList.Actors)
+                    {
+                        <div class="col-md-2">
+                            <div class="card mb-3" style="cursor: pointer;" @onclick="() => GoToActorDetails(actor.Id)">
+                                <img src="@GetActorPoster(actor.ProfilePath)" class="card-img-top" alt="Actor Image">
+                                <div class="card-body">
+                                    <h5 class="card-title" style="color: black;">@actor.Name</h5>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            @if (actorList?.CurrentPage < actorList?.TotalPages)
+            {
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary" @onclick="LoadNextPage">Load More</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
 @code {
-    private List<Actor> someActors = new List<Actor>();
-    private Actor someActor = new Actor();
-    private int actorId = 32;
+
+    private int currentPage = 1;
+    private ListOfActors actorList;
 
     protected override async Task OnInitializedAsync()
     {
-        someActor = await GetActor(actorId);
-    } 
+        actorList = new ListOfActors();
+        await LoadActors();
+    }
 
-    private async Task<Actor> GetActor(int id)
+    public string GetActorPoster(string path)
     {
-        var result = await ActorService.GetActorByID(id);
-        return result;
+        if (string.IsNullOrEmpty(path))
+        {
+            return "Images/defaultUserImage.jpg";
+        }
+        string actorPoster = "http://image.tmdb.org/t/p/w500/";
+        return actorPoster + path;
+    }
+
+    private async Task LoadActors()
+    {
+        actorList = await ActorService.GetPopularActors(currentPage);
+    }
+
+    private async Task LoadNextPage()
+    {
+        currentPage++;
+        var nextPageActors = await ActorService.GetPopularActors(currentPage);
+        actorList.Actors.AddRange(nextPageActors.Actors);
+        StateHasChanged();
+    }
+
+    private void GoToActorDetails(int actorId)
+    {
+        NavigationManager.NavigateTo($"/ActorsDetails/{actorId}");
     }
 }
