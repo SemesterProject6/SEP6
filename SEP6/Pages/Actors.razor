@@ -5,25 +5,27 @@
 @inject NavigationManager NavigationManager
 
 <h3>Popular actors</h3>
+<MudGrid>
 
-<div class="container-fluid mt-5">
-    <div class="row">
-        <div class="col-md-12" style="max-height: 100vh; overflow-y: auto;">
+    <MudItem xs="12" md="2">
+
+    </MudItem>
+    <MudItem xs="12" md="10">
             @if (actorList?.Actors != null)
             {
-                <div class="row">
+                <MudGrid>               
                     @foreach (var actor in actorList.Actors)
                     {
-                        <div class="col-md-2">
-                            <div class="card mb-3" style="cursor: pointer;" @onclick="() => GoToActorDetails(actor.Id)">
-                                <img src="@GetActorPoster(actor.ProfilePath)" class="card-img-top" alt="Actor Image">
-                                <div class="card-body">
-                                    <h5 class="card-title" style="color: black;">@actor.Name</h5>
-                                </div>
-                            </div>
-                        </div>
+                        <MudItem xs="6" sm="4" md="3" xl="2">
+                        <MudCard Width="200px" style="cursor: pointer;" @onclick="() => GoToActorDetails(actor.Id)">
+                                <MudCardMedia  Image="@GetActorPoster(actor.ProfilePath)" Height="300"  />
+                                <MudCardContent>
+                                     <MudText Typo="Typo.h6">@actor.Name</MudText>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
                     }
-                </div>
+                </MudGrid>
             }
             @if (actorList?.CurrentPage < actorList?.TotalPages)
             {
@@ -31,9 +33,8 @@
                     <button class="btn btn-primary" @onclick="LoadNextPage">Load More</button>
                 </div>
             }
-        </div>
-    </div>
-</div>
+    </MudItem>
+</MudGrid>
 
 @code {
 
