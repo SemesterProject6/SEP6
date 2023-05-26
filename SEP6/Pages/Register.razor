@@ -1,0 +1,112 @@
+@page "/Register"
+@using Data
+@using System.ComponentModel.DataAnnotations
+@using SEP6.Data.Users;
+@using SEP6.Models
+@using InputType = MudBlazor.InputType
+
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<AuthorizeView>
+    <NotAuthorized Context="NotAuth">
+        <MudGrid Justify="Justify.Center">
+            <MudItem xs="6" Class="my-7">
+                <MudPaper Elevation="14" Class="d-flex align-center justify-center py-8">
+                    <table>
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.h4" Align="Align.Center" Class="ma-5">Register an account</MudText>
+                                <MudIcon Style="font-size: 10rem; margin: 0 auto 10px; display: block;" Icon="@Icons.Material.Filled.Person" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <EditForm Model="@RegisterFormModel" OnValidSubmit="OnValidRegisterFormSubmit">
+                                    <DataAnnotationsValidator/>
+                                    <MudTextField Label="Username" Class="mt-3" @bind-Value="RegisterFormModel.Username" For="@(() => RegisterFormModel.Username)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Person" />
+                                    <MudTextField Label="Email" Class="mt-3" @bind-Value="RegisterFormModel.Email" For="@(() => RegisterFormModel.Email)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AlternateEmail"/>
+                                    <MudTextField Label="First Name" Class="mt-3" @bind-Value="RegisterFormModel.FirstName" For="@(() => RegisterFormModel.FirstName)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AccountBox" />
+                                    <MudTextField Label="Last Name" Class="mt-3" @bind-Value="RegisterFormModel.LastName" For="@(() => RegisterFormModel.LastName)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AccountBox" />
+                                    <MudDatePicker Label="dd.MM.yyyy" Class="mt-3" Editable="true" @bind-Date="RegisterFormModel.Birthday" For="@(() => RegisterFormModel.Birthday)" Mask="@(new DateMask("dd.MM.yyyy"))" DateFormat="dd.MM.yyyy" Placeholder="Birthday" />
+                                    <MudTextField Label="Password" Class="mt-3" @bind-Value="RegisterFormModel.Password" For="@(() => RegisterFormModel.Password)" InputType="@PasswordInputType" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibilityState"/>
+                                    <MudTextField Label="Retype Password" Class="mt-3" InputType="InputType.Password" @bind-Value="RegisterFormModel.PasswordConfirmation" For="@(() => RegisterFormModel.PasswordConfirmation)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Outlined.Lock"/>
+                                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="py-2 mt-4">Register</MudButton>
+
+                                    <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4" FullWidth="true" Color="Color.Error">@ErrorMessage</MudText>
+                                    <MudDivider/>
+                                    <a href="/Login" class="text-center login-href">Already have an account? Sign in</a>
+                                </EditForm>
+                            </td>
+                        </tr>
+                    </table>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    // Variables for handling the state and behaviour of the show password button.
+    private InputType PasswordInputType = InputType.Password;
+    private string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private bool IsPasswordVisible;
+
+    private void TogglePasswordVisibilityState()
+    {
+        if (IsPasswordVisible)
+        {
+            IsPasswordVisible = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInputType = InputType.Password;
+        }
+        else
+        {
+            IsPasswordVisible = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInputType = InputType.Text;
+        }
+    }
+
+    // Class that contains the input data of the register form.
+    public class RegisterForm
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "Username must be at least 3 characters long.", MinimumLength = 3)]
+        public string Username { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "First name must be at least 2 characters long.", MinimumLength = 2)]
+        public string FirstName { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "Last name must be at least 2 characters long.", MinimumLength = 2)]
+        public string LastName { get; set; }
+
+        [Required]
+        public DateTime? Birthday { get; set; }
+
+        [Required]
+        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
+        public string Password { get; set; }
+
+        [Required]
+        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
+        public string PasswordConfirmation { get; set; }
+    }
+
+    private readonly RegisterForm RegisterFormModel = new();
+    private string ErrorMessage;
+
+    private async Task OnValidRegisterFormSubmit(EditContext context)
+    {
+        Console.WriteLine("Registering User");
+    }
+
+}
