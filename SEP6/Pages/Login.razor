@@ -1,9 +1,14 @@
 @page "/Login"
 @using System.ComponentModel.DataAnnotations
+@using SEP6.Models;
+@using SEP6.Data.Users;
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 @using InputType = MudBlazor.InputType
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IUserService UserService
 
 <AuthorizeView>
     <NotAuthorized Context="NotAuth">
@@ -43,7 +48,7 @@
 </AuthorizeView>
 
 @code {
-    
+
     // Variables for handling the state and behaviour of the show password button.
     private InputType PasswordInputType = InputType.Password;
     private string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -69,13 +74,28 @@
 
         [Required]
         public string Password { get; set; }
-        
+
     }
 
     private LoginForm LoginFormModel = new LoginForm();
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthStat { get; set; }
     private string ErrorMessage;
 
     private async Task OnValidLoginFormSubmit(EditContext context) {
-        //TO DO:
+        ErrorMessage = "";
+        try
+        {
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).ValidateLogin(LoginFormModel.Username, LoginFormModel.Password);
+            if ((await AuthStat).User == null) return;
+            var user = (await AuthStat).User;
+
+            UserService.SetUserId(int.Parse(user.FindFirst(c => c.Type == ClaimTypes.SerialNumber)?.Value));
+            NavigationManager.NavigateTo($"/");
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = "No user found with provided email and password";
+        }
     }
 }
