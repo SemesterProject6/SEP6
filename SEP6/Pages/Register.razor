@@ -110,10 +110,18 @@
                 Email = RegisterFormModel.Email,
                 Password = RegisterFormModel.Password, 
                 FirstName = RegisterFormModel.FirstName, 
-                LastName = RegisterFormModel.LastName 
+                LastName = RegisterFormModel.LastName,
+                Birthday = RegisterFormModel.Birthday,
             };
+            DateTime today = DateTime.Today;
+            int age = today.Year - RegisterFormModel.Birthday.Value.Year;
+            if (RegisterFormModel.Birthday.Value.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+            user.Age = age;
             await UserService.CreateAccount(user);
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/Login");
         }
         catch (Exception e)
         {
