@@ -33,6 +33,21 @@
                 }
                 <p>Rating: <span style="font-weight: bold;">@(movie.Rating * 10)</span>%, <span style="font-weight: bold;">@movie.NrOfVotes</span> Ratings</p>
                 <p>@movie.Overview</p>
+
+                @if (videoList != null && videoList.videos != null && videoList.videos.Count > 0)
+                {
+                    <div class="mt-10">
+                        <h5>Trailer:</h5>
+                            @if (!string.IsNullOrEmpty(videoList.videos[0].Key))
+                           {
+                            <iframe width="560" height="560" src="https://www.youtube.com/embed/@videoList.videos[0].Key" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                           }
+                           else
+                           {
+                           <p>No video available.</p>
+                           }
+                    </div>
+                }
             </div>
         </div>
         <div class="row">
@@ -92,11 +107,14 @@ else
     private Credits credit;
     private List<Actor> actors = new List<Actor>();
     private Genre genre = new Genre();
+    private VideoList videoList = new VideoList();
 
     protected override async Task OnInitializedAsync()
     {
         var movieId = int.Parse(Id); // Parse the ID string to an integer
         movie = await GetMovie(movieId); // Call the GetMovie method with the movie ID
+        videoList = await GetVideos(movieId);
+
         if (movie != null)
         {
             credit = await GetCreditsByMovie(movieId);
@@ -121,7 +139,19 @@ else
             return null;
         }
     }
-    
+    private async Task<VideoList> GetVideos(int id)
+    {
+        try
+        {
+            return await MovieService.GetVideosByMovieId(id);
+        }
+        catch (Exception ex)
+        {
+            // Handle the exception or log the error
+            Console.WriteLine($"Failed to get movie videos: {ex.Message}");
+            return null;
+        }
+    }
 
     private async Task<Credits> GetCreditsByMovie(int id)
     {
@@ -155,5 +185,4 @@ else
             await JSRuntime.InvokeVoidAsync("initSlickCarousel");
         }
     }
-
 }
