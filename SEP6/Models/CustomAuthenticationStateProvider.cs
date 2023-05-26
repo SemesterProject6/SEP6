@@ -46,7 +46,7 @@ namespace SEP6.Models
             if (string.IsNullOrEmpty(email)) throw new Exception("Enter Email");
             if (string.IsNullOrEmpty(password)) throw new Exception("Enter password");
 
-            ClaimsIdentity identity = new ClaimsIdentity();
+            ClaimsIdentity identity = new();
             try
             {
                 User user = await userService.ValidateUser(email, password);
@@ -64,7 +64,7 @@ namespace SEP6.Models
                 Task.FromResult(new AuthenticationState(new ClaimsPrincipal(identity))));
         }
 
-        public void Logout()
+        public async Task Logout()
         {
             cachedUser = null;
             var user = new ClaimsPrincipal(new ClaimsIdentity());
@@ -74,11 +74,13 @@ namespace SEP6.Models
 
         private ClaimsIdentity SetupClaimsForUser(User user)
         {
-            List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.SerialNumber, user.UserID.ToString()));
+            List<Claim> claims = new()
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.SerialNumber, user.UserID.ToString())
+            };
 
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "apiauth_type");
+            ClaimsIdentity identity = new(claims, "apiauth_type");
             return identity;
         }
     }
