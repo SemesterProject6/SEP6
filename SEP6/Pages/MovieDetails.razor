@@ -31,11 +31,15 @@
                                 <h4>@movie.Title ( @movie.Original_Title )</h4>
                             }
                    </div>
-                    <div class="col-md-1">
-                        <MudToggleIconButton @bind-Toggled="@isFavorite" @onclick="() => ToggleMovieFavorite()" Size="Size.Large"
-                                         Icon="@Icons.Material.Outlined.StarOutline"
-                                         ToggledIcon="@Icons.Material.Filled.Star" ToggledColor="Color.Primary" ToggledSize="Size.Large" />
-                    </div>
+                   <AuthorizeView>
+                        <Authorized>
+                            <div class="col-md-1">
+                                <MudToggleIconButton @bind-Toggled="@isFavorite" @onclick="() => ToggleMovieFavorite()" Size="Size.Large"
+                                                 Icon="@Icons.Material.Outlined.StarOutline" Title="Add" ToggledTitle="Remove"
+                                                 ToggledIcon="@Icons.Material.Filled.Star" ToggledColor="Color.Primary" ToggledSize="Size.Large" />
+                            </div>
+                        </Authorized>
+                    </AuthorizeView>
                 </div>
                 @{
                     DateTime releaseDate = DateTime.Parse(movie.ReleaseDate);
@@ -126,6 +130,7 @@ else
     [Parameter]
     public string Id { get; set; }
     private Movie movie;
+    private int movieId;
     private Credits credit;
     private List<Actor> actors = new List<Actor>();
     private Genre genre = new Genre();
@@ -135,14 +140,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var movieId = int.Parse(Id); // Parse the ID string to an integer
+        movieId = int.Parse(Id); // Parse the ID string to an integer
         movie = await GetMovie(movieId); // Call the GetMovie method with the movie ID
         videoList = await GetVideos(movieId);
-        isFavorite = await IsMovieFavorited();
 
         if (movie != null)
         {
             credit = await GetCreditsByMovie(movieId);
+            isFavorite = await IsMovieFavorited();
 
             if (credit != null && credit.Actors != null)
             {
@@ -205,7 +210,7 @@ else
 
     private async Task<bool> IsMovieFavorited()
     {
-        return await FavoriteMovieService.GetIsFavoriteMovieByID(UserService.GetUserId(), MovieService.GetMovieId());
+        return await FavoriteMovieService.GetIsFavoriteMovieByID(UserService.GetUserId(), movieId);
     }
 
     private async Task ToggleMovieFavorite()
@@ -213,12 +218,12 @@ else
         isFavorite = !isFavorite;
         if (isFavorite)
         {
-            await FavoriteMovieService.AddFavoriteMovie(UserService.GetUserId(), MovieService.GetMovieId());
+            await FavoriteMovieService.AddFavoriteMovie(UserService.GetUserId(), movieId);
             StateHasChanged();
         }
         else
         {
-            await FavoriteMovieService.RemoveFavoriteMovieByID(UserService.GetUserId(), MovieService.GetMovieId());
+            await FavoriteMovieService.RemoveFavoriteMovieByID(UserService.GetUserId(), movieId);
             StateHasChanged();
         }
     }
