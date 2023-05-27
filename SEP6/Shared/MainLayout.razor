@@ -25,9 +25,9 @@
         <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.TheaterComedy" Href="/Actors">Actors</MudButton>
         <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.LocalMovies" Href="/Movies">Movies</MudButton>
         <MudSpacer />
-        <AuthorizeView>
+        <AuthorizeView Context="NotAuth">
             <Authorized>
-                <MudButton Variant="Variant.Filled" Color="Color.Error">@loggedUser.FirstName</MudButton>
+                <MudChip Icon="@Icons.Material.Filled.Person" Color="Color.Primary">Account</MudChip>
             </Authorized>
         </AuthorizeView>
         <MudToggleIconButton @bind-Toggled="@_isDarkMode"
@@ -44,18 +44,36 @@
 
 @code {
     private bool _isDarkMode;
-    private User loggedUser;
+    private User loggedUser = new();
     private MudThemeProvider _mudThemeProvider;
+    [CascadingParameter]
+    protected Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (AuthState is not null)
+        {
+            var authState = await AuthState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                Console.WriteLine($"{user.Identity.Name} is authenticated.");
+            }
+            
+        }
+            
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _isDarkMode = await _mudThemeProvider.GetSystemPreference();
-            await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);           
             StateHasChanged();
         }
-        UserLogged();
+
     }
 
     private async Task OnSystemPreferenceChanged(bool newValue)
@@ -75,14 +93,17 @@
         catch (Exception e) { }
     }
 
-    public async Task UserLogged()
-    {
-        if (UserService.GetUserId() != 0)
-        {
-            loggedUser = await UserService.GetUserByID(UserService.GetUserId()).ConfigureAwait(false);
-            StateHasChanged();
-        }
-    }
+    //public async Task UserLogged()
+    //{
+    //    var tmpAuthState = await AuthState;
+    //    var user =  tmpAuthState.User;
+
+    //    if (user.Identity.IsAuthenticated)
+    //    {
+    //        loggedUser = await UserService.GetUserByID(UserService.GetUserId()).ConfigureAwait(false);
+    //        StateHasChanged();
+    //    }
+    //}
 
 
     MudTheme MyCustomTheme = new MudTheme()
