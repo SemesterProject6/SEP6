@@ -1,10 +1,16 @@
 ﻿@page "/MoviesDetails/{Id}"
 @using SEP6.Data.Actors;
 @using SEP6.Data.Movies;
+@using SEP6.Data.FavoriteMovie;
+@using SEP6.Data.Users;
 @using SEP6.Models;
 @inject IActorService ActorService
 @inject IMovieService MovieService
+@inject IFavoriteMovieService FavoriteMovieService
+@inject IUserService UserService
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
 
 @if (movie != null)
 {
@@ -14,14 +20,23 @@
                 <img src="@GetPoster(movie.PosterRoute)" class="img-fluid rounded-lg" alt="Movie Poster">
             </div>
             <div class="col-md-8">
-                @if (@movie.Title == @movie.Original_Title)
-                {
-                    <h4>@movie.Title</h4>
-                }
-                else
-                {
-                    <h4>@movie.Title ( @movie.Original_Title )</h4>
-                }
+                <div class="row">
+                    <div class="col-md-11">
+                            @if (@movie.Title == @movie.Original_Title)
+                            {
+                                <h4>@movie.Title</h4>
+                            }
+                            else
+                            {
+                                <h4>@movie.Title ( @movie.Original_Title )</h4>
+                            }
+                   </div>
+                    <div class="col-md-1">
+                        <MudToggleIconButton @bind-Toggled="@isFavorite" @onclick="() => ToggleMovieFavorite()" Size="Size.Large"
+                                         Icon="@Icons.Material.Outlined.StarOutline"
+                                         ToggledIcon="@Icons.Material.Filled.Star" ToggledColor="Color.Primary" ToggledSize="Size.Large" />
+                    </div>
+                </div>
                 @{
                     DateTime releaseDate = DateTime.Parse(movie.ReleaseDate);
                     string formattedYear = releaseDate.ToString("yyyy");
@@ -115,12 +130,15 @@ else
     private List<Actor> actors = new List<Actor>();
     private Genre genre = new Genre();
     private VideoList videoList = new VideoList();
+    private bool isFavorite = false;
+
 
     protected override async Task OnInitializedAsync()
     {
         var movieId = int.Parse(Id); // Parse the ID string to an integer
         movie = await GetMovie(movieId); // Call the GetMovie method with the movie ID
         videoList = await GetVideos(movieId);
+        isFavorite = await IsMovieFavorited();
 
         if (movie != null)
         {
@@ -183,6 +201,26 @@ else
     public async Task ActorSelected(int id)
     {
         ActorService.SetActorId(id);
+    }
+
+    private async Task<bool> IsMovieFavorited()
+    {
+        return await FavoriteMovieService.GetIsFavoriteMovieByID(UserService.GetUserId(), MovieService.GetMovieId());
+    }
+
+    private async Task ToggleMovieFavorite()
+    {
+        isFavorite = !isFavorite;
+        if (isFavorite)
+        {
+            await FavoriteMovieService.AddFavoriteMovie(UserService.GetUserId(), MovieService.GetMovieId());
+            StateHasChanged();
+        }
+        else
+        {
+            await FavoriteMovieService.RemoveFavoriteMovieByID(UserService.GetUserId(), MovieService.GetMovieId());
+            StateHasChanged();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
