@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using SEP6.Models;
 using SEP6.Data.Users;
+using SEP6.Data.FavoriteMovie;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -19,6 +20,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddSingleton<IActorService, ActorService>();
 builder.Services.AddSingleton<IMovieService, MovieService>();
 builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IFavoriteMovieService, FavoriteMovieService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddAuthorizationCore(options =>
 {
