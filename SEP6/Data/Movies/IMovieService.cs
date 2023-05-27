@@ -18,5 +18,6 @@ namespace SEP6.Data.Movies
         Task<Credits> GetCreditsByMovieId(int movieId);
 
         Task<VideoList> GetVideosByMovieId(int movieId);
+        Task<CrewMember> GetDirectorByMovieId(int movieId);
     }
 }

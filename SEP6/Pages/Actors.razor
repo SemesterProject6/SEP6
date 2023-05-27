@@ -5,10 +5,11 @@
 @inject NavigationManager NavigationManager
 
 <h3>Popular actors</h3>
+<input type="text" @bind="UserInput" />
+<p>You entered: @UserInput</p>
+<button @onclick="SubmitForm">Submit</button>
 <MudGrid>
-
     <MudItem xs="12" md="2">
-
     </MudItem>
     <MudItem xs="12" md="10">
         @if (actorList?.Actors != null)
@@ -16,7 +17,6 @@
             <MudGrid>
                 @foreach (var actor in actorList.Actors)
                 {
-                   
                     <MudItem xs="6" sm="4" md="3" xl="2">
                         <a href="/ActorsDetails/@actor.Id" class="text-decoration-none">
                             <MudCard Width="200px" style="cursor: pointer;">
@@ -30,7 +30,6 @@
                 }
             </MudGrid>
         }
-
         @if (actorList?.CurrentPage < actorList?.TotalPages)
         {
             <div class="text-center mt-4">
@@ -41,9 +40,11 @@
 </MudGrid>
 
 @code {
-
     private int currentPage = 1;
     private ListOfActors actorList;
+    public int totalPages;
+    private ListOfActors movieList = new ListOfActors();
+    public string UserInput { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,15 +64,44 @@
 
     private async Task LoadActors()
     {
-        actorList = await ActorService.GetPopularActors(currentPage);
+        if (string.IsNullOrEmpty(UserInput))
+        {
+            actorList = await ActorService.GetPopularActors(currentPage);
+        }
+        else
+        {
+            actorList = await ActorService.GetActorsBySearch(currentPage, UserInput);
+        }
         StateHasChanged();
     }
 
     private async Task LoadNextPage()
     {
         currentPage++;
-        var nextPageActors = await ActorService.GetPopularActors(currentPage);
-        actorList.Actors.AddRange(nextPageActors.Actors);
+        if (string.IsNullOrEmpty(UserInput))
+        {
+            var nextPageActors = await ActorService.GetPopularActors(currentPage);
+            actorList.Actors.AddRange(nextPageActors.Actors);
+        }
+        else
+        {
+            var nextPageActors = await ActorService.GetActorsBySearch(currentPage, UserInput);
+            actorList.Actors.AddRange(nextPageActors.Actors);
+        }
         StateHasChanged();
+    }
+
+    private async Task<ListOfActors> SearchActor(int page, string name)
+    {
+        var result = await ActorService.GetActorsBySearch(page, name);
+        currentPage = result.CurrentPage;
+        totalPages = result.TotalPages;
+        return result;
+    }
+
+    private async Task SubmitForm()
+    {
+        currentPage = 1;
+        await LoadActors();
     }
 }

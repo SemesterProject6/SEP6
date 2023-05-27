@@ -52,7 +52,15 @@
                 }
                 <p>Rating: <span style="font-weight: bold;">@(movie.Rating * 10)</span>%, <span style="font-weight: bold;">@movie.NrOfVotes</span> Ratings</p>
                 <p>@movie.Overview</p>
-
+                @if (movie.Director != null)
+                {
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <h5>Director:</h5>
+                            <p>@movie.Director.Name</p>
+                        </div>
+                    </div>
+                }
                 @if (videoList != null && videoList.videos != null && videoList.videos.Count > 0)
                 {
                     <div class="mt-10">
@@ -136,6 +144,7 @@ else
     private Genre genre = new Genre();
     private VideoList videoList = new VideoList();
     private bool isFavorite = false;
+    private CrewMember crewMember;
 
 
     protected override async Task OnInitializedAsync()

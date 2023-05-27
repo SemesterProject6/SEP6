@@ -24,6 +24,8 @@ namespace SEP6.Models
         [JsonPropertyName("vote_count")]
         public int? NrOfVotes { get; set; }
 
+        public CrewMember Director { get; set; }
+
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);

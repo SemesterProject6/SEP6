@@ -20,6 +20,11 @@ namespace SEP6.Data.Movies
         {
             string message = await client.GetStringAsync(url + "/" + id);
             Movie result = JsonSerializer.Deserialize<Movie>(message);
+
+            // Get director information
+            CrewMember director = await GetDirectorByMovieId(id);
+            result.Director = director;
+
             return result;
         }
 
@@ -64,6 +69,16 @@ namespace SEP6.Data.Movies
             string message = await client.GetStringAsync($"{url}/{movieId}/videos");
             VideoList result = JsonSerializer.Deserialize<VideoList>(message);
             return result;
+        }
+        public async Task<CrewMember> GetDirectorByMovieId(int movieId)
+        {
+            string message = await client.GetStringAsync(url + "/" + movieId + "/credits");
+            Credits credits = JsonSerializer.Deserialize<Credits>(message);
+
+            // Assuming the director is the first crew member with the job title "Director"
+            var director = credits.Crew.FirstOrDefault(crew => crew.Job == "Director");
+
+            return director;
         }
 
         public async Task<ListOfMovies> GetNowPlayingMovies(int page)
