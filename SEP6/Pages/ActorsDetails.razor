@@ -1,5 +1,138 @@
-﻿<h3>ActorsDetails</h3>
+﻿@page "/ActorsDetails/{Id}"
+@using SEP6.Data.Actors;
+@using SEP6.Models;
+
+<h3>ActorsDetails</h3>
+
+@if (actor != null)
+{
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="@GetActorProfile(actor.ProfilePath)" class="img-fluid rounded-lg" alt="Actor Profile">
+            </div>
+            <div class="col-md-8">
+                <h4>@actor.Name</h4>
+                <p>@actor.Biography</p>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col">
+                <h5>Movies:</h5>
+                @if (credits != null && credits.Movies != null && credits.Movies.Count > 0)
+                {
+                    <div id="carouselMovies" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            @for (var i = 0; i < Math.Ceiling((double)credits.Movies.Count / 5); i++)
+                            {
+                                <li data-target="#carouselMovies" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
+                            }
+                        </ol>
+                        <div class="carousel-inner">
+                            @for (var i = 0; i < credits.Movies.Count; i += 5)
+                            {
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <div class="row justify-content-center">
+                                        @for (var j = i; j < i + 5 && j < credits.Movies.Count; j++)
+                                        {
+                                            var movie = credits.Movies[j];
+                                            <div class="col-2">
+                                                <div class="text-center">
+                                                    <a href="/MoviesDetails/@movie.Id">
+                                                        <img src="@GetMoviePoster(movie.PosterRoute)" class="img-fluid rounded-lg mb-2" alt="Movie Poster" style="max-width: 120px; max-height: 180px;">
+                                                    </a>
+                                                    <h6>@movie.Title</h6>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselMovies" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselMovies" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Actor details not found.</p>
+}
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
+    private Actor actor;
+    private CreditsForMovies credits;
 
+    [Inject]
+    public IActorService ActorService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var actorId = int.Parse(Id);
+        actor = await GetActor(actorId);
+        if (actor != null)
+        {
+            credits = await GetMovieCredits(actorId);
+        }
+    }
+
+    private async Task<Actor> GetActor(int id)
+    {
+        try
+        {
+            var actor = await ActorService.GetActorByID(id);
+            return actor;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to get actor: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<CreditsForMovies> GetMovieCredits(int id)
+    {
+        try
+        {
+            var credits = await ActorService.GetMovieCreditsByActorId(id);
+            return credits;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to get movie credits: {ex.Message}");
+            return null;
+        }
+    }
+
+    public string GetActorProfile(string path)
+    {
+        string profileUrl = "http://image.tmdb.org/t/p/w500/";
+        return profileUrl + path;
+    }
+
+    public string GetMoviePoster(string path)
+    {
+        if (!string.IsNullOrEmpty(path))
+        {
+            string posterUrl = "http://image.tmdb.org/t/p/w500/";
+            return posterUrl + path;
+        }
+        else
+        {
+            string defaultImage = "/Images/NoImage.png";
+            return defaultImage;
+        }
+    }
 }
