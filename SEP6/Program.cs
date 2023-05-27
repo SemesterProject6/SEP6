@@ -16,6 +16,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddMudServices();
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<MovieService>();
 builder.Services.AddSingleton<IActorService, ActorService>();
 builder.Services.AddSingleton<IMovieService, MovieService>();
 builder.Services.AddSingleton<IUserService, UserService>();
