@@ -58,7 +58,6 @@
     {
         movieList = await MovieService.GetMoviesByRating(currentPage);
 
-        // Increase the number of movies by fetching additional pages
         for (int page = 2; page <= 5; page++) // Fetch additional 4 pages
         {
             var additionalMovies = await MovieService.GetMoviesByRating(page);
