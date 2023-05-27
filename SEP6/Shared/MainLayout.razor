@@ -1,8 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using SEP6.Models;
+@using SEP6.Data.Users;
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IUserService UserService
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
@@ -15,7 +17,7 @@
                <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Login" Href="/Login">Login</MudButton>
            </NotAuthorized>
             <Authorized>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Logout" OnClick="Logout">Log out</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Logout" OnClick="Logout">Log out</MudButton>
             </Authorized>
         </AuthorizeView>
         <MudSpacer />
@@ -23,6 +25,11 @@
         <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.TheaterComedy" Href="/Actors">Actors</MudButton>
         <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.LocalMovies" Href="/Movies">Movies</MudButton>
         <MudSpacer />
+        <AuthorizeView Context="NotAuth">
+            <Authorized>
+                <MudChip Icon="@Icons.Material.Filled.Person" Color="Color.Primary">Account</MudChip>
+            </Authorized>
+        </AuthorizeView>
         <MudToggleIconButton @bind-Toggled="@_isDarkMode"
             Icon="@Icons.Material.Filled.Cloud" Color="@Color.Secondary" Title="On"
             ToggledIcon="@Icons.Material.Filled.WbSunny" ToggledColor="@Color.Tertiary" ToggledTitle="Off" />
@@ -37,16 +44,36 @@
 
 @code {
     private bool _isDarkMode;
+    private User loggedUser = new();
     private MudThemeProvider _mudThemeProvider;
+    [CascadingParameter]
+    protected Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (AuthState is not null)
+        {
+            var authState = await AuthState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                Console.WriteLine($"{user.Identity.Name} is authenticated.");
+            }
+            
+        }
+            
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _isDarkMode = await _mudThemeProvider.GetSystemPreference();
-            await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);           
             StateHasChanged();
         }
+
     }
 
     private async Task OnSystemPreferenceChanged(bool newValue)
@@ -60,10 +87,23 @@
         try
         {
             await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).Logout();
+            loggedUser = null;
             NavigationManager.NavigateTo("/");
         }
         catch (Exception e) { }
     }
+
+    //public async Task UserLogged()
+    //{
+    //    var tmpAuthState = await AuthState;
+    //    var user =  tmpAuthState.User;
+
+    //    if (user.Identity.IsAuthenticated)
+    //    {
+    //        loggedUser = await UserService.GetUserByID(UserService.GetUserId()).ConfigureAwait(false);
+    //        StateHasChanged();
+    //    }
+    //}
 
 
     MudTheme MyCustomTheme = new MudTheme()

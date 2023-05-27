@@ -20,5 +20,9 @@ builder.Services.AddSingleton<IActorService, ActorService>();
 builder.Services.AddSingleton<IMovieService, MovieService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy("SecurityLevel1", a =>
+        a.RequireAuthenticatedUser().RequireClaim("Level", "1"));
+});
 await builder.Build().RunAsync();

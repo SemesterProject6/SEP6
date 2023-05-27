@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
+
 <AuthorizeView>
     <NotAuthorized Context="NotAuth">
         <MudGrid Justify="Justify.Center">
@@ -25,7 +26,6 @@
                             <td>
                                 <EditForm Model="@RegisterFormModel" OnValidSubmit="OnValidRegisterFormSubmit">
                                     <DataAnnotationsValidator/>
-                                    <MudTextField Label="Username" Class="mt-3" @bind-Value="RegisterFormModel.Username" For="@(() => RegisterFormModel.Username)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Person" />
                                     <MudTextField Label="Email" Class="mt-3" @bind-Value="RegisterFormModel.Email" For="@(() => RegisterFormModel.Email)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AlternateEmail"/>
                                     <MudTextField Label="First Name" Class="mt-3" @bind-Value="RegisterFormModel.FirstName" For="@(() => RegisterFormModel.FirstName)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AccountBox" />
                                     <MudTextField Label="Last Name" Class="mt-3" @bind-Value="RegisterFormModel.LastName" For="@(() => RegisterFormModel.LastName)" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AccountBox" />
@@ -78,10 +78,6 @@
         public string Email { get; set; }
 
         [Required]
-        [StringLength(50, ErrorMessage = "Username must be at least 3 characters long.", MinimumLength = 3)]
-        public string Username { get; set; }
-
-        [Required]
         [StringLength(50, ErrorMessage = "First name must be at least 2 characters long.", MinimumLength = 2)]
         public string FirstName { get; set; }
 
@@ -106,7 +102,31 @@
 
     private async Task OnValidRegisterFormSubmit(EditContext context)
     {
-        Console.WriteLine("Registering User");
+        ErrorMessage = "";
+        try
+        {
+            if (RegisterFormModel.Password != RegisterFormModel.PasswordConfirmation) throw new Exception("Both passwords must be identical");
+            User user = new User() {
+                Email = RegisterFormModel.Email,
+                Password = RegisterFormModel.Password, 
+                FirstName = RegisterFormModel.FirstName, 
+                LastName = RegisterFormModel.LastName,
+                Birthday = RegisterFormModel.Birthday,
+            };
+            DateTime today = DateTime.Today;
+            int age = today.Year - RegisterFormModel.Birthday.Value.Year;
+            if (RegisterFormModel.Birthday.Value.Date > today.AddYears(-age))
+            {
+                age--;
+            }
+            user.Age = age;
+            await UserService.CreateAccount(user);
+            NavigationManager.NavigateTo("/Login");
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = e.Message;
+        }
     }
 
 }

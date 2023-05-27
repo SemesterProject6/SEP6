@@ -79,7 +79,7 @@
 
     private LoginForm LoginFormModel = new LoginForm();
     [CascadingParameter]
-    protected Task<AuthenticationState> AuthStat { get; set; }
+    protected Task<AuthenticationState> AuthState { get; set; }
     private string ErrorMessage;
 
     private async Task OnValidLoginFormSubmit(EditContext context) {
@@ -87,8 +87,8 @@
         try
         {
             await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).ValidateLogin(LoginFormModel.Username, LoginFormModel.Password);
-            if ((await AuthStat).User == null) return;
-            var user = (await AuthStat).User;
+            if ((await AuthState).User == null) return;
+            var user = (await AuthState).User;
 
             UserService.SetUserId(int.Parse(user.FindFirst(c => c.Type == ClaimTypes.SerialNumber)?.Value));
             NavigationManager.NavigateTo($"/");
