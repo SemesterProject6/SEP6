@@ -65,5 +65,26 @@ namespace SEP6.Data.Movies
             VideoList result = JsonSerializer.Deserialize<VideoList>(message);
             return result;
         }
+
+        public async Task<ListOfMovies> GetNowPlayingMovies(int page)
+        {
+            string message = await client.GetStringAsync(url + "/NowPlaying?page=" + page);
+            ListOfMovies results = JsonSerializer.Deserialize<ListOfMovies>(message);
+            return results;
+        }
+
+        public async Task<ListOfMovies> GetPopularMovies(int page)
+        {
+            string message = await client.GetStringAsync(url + "/Popular?page=" + page);
+            ListOfMovies results = JsonSerializer.Deserialize<ListOfMovies>(message);
+            return results;
+        }
+
+        public async Task<ListOfMovies> GetUpcomingMovies(int page)
+        {
+            string message = await client.GetStringAsync(url + "/Upcoming?page=" + page);
+            ListOfMovies results = JsonSerializer.Deserialize<ListOfMovies>(message);
+            return results;
+        }
     }
 }
