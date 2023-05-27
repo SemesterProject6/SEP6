@@ -1,0 +1,59 @@
+﻿@page "/Favorites"
+@attribute [Authorize]
+@using SEP6.Data.Movies;
+@using SEP6.Data.FavoriteMovie;
+@using SEP6.Data.Users;
+@using SEP6.Models;
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IMovieService MovieService
+@inject IUserService UserService
+@inject IFavoriteMovieService FavoriteMovieService
+@inject NavigationManager NavigationManager
+
+@if (favoriteMovies.Movies != null)
+{
+<MudGrid>
+    <MudItem xs="12">
+        <MudGrid>
+           <h3>Favorite Movies</h3>
+        </MudGrid>
+        <MudGrid>
+               
+
+         @foreach (var m in favoriteMovies.Movies)
+         {
+            <MudItem xs="6" md="2">
+                 <MudCard style="cursor: pointer;" @onclick="() => MovieSelected(m.Id)">
+                    <MudCardMedia Image="@GetMoviePoster(m.PosterRoute)" Height="300" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@m.Title</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+         }
+        </MudGrid>
+    </MudItem>   
+</MudGrid>
+}
+
+@code {
+    private ListOfMovies favoriteMovies = new ListOfMovies();
+
+    protected override async Task OnInitializedAsync()
+    {
+        favoriteMovies = await FavoriteMovieService.GetFavoriteMoviesByID(UserService.GetUserId());
+    }
+    
+    public async Task MovieSelected(int id)
+    {
+        MovieService.SetMovieId(id);
+        NavigationManager.NavigateTo($"/MoviesDetails/{id}");
+    }
+
+    public string GetMoviePoster(string path)
+    {
+        string moviePoster = "http://image.tmdb.org/t/p/w500/";
+        return moviePoster + path;
+    }
+
+}
