@@ -62,14 +62,21 @@
                               <div class="row">
                                  @for (var j = i * 6; j < Math.Min((i * 6) + 6, actors.Count); j++)
                                   {
-                                      <div class="col-md-2">
-                                           <a class="text-decoration-none">
-                                            <div class="text-center">
-                                                <img src="@GetPoster(actors[j].ProfilePath)" class="img-fluid rounded-lg">
-                                                <h6 class="mt-3">@actors[j].Name</h6>
+                                            <div class="col-md-2">
+                                                <a href="/ActorsDetails/@actors[j].Id" class="text-decoration-none">
+                                                    <div class="text-center">
+                                                        @if (!string.IsNullOrEmpty(actors[j].ProfilePath))
+                                                        {
+                                                            <img src="@GetPoster(actors[j].ProfilePath)" class="img-fluid rounded-lg">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="Images/defaultUserImage.jpg" class="img-fluid rounded-lg">
+                                                        }
+                                                        <h6 class="mt-3">@actors[j].Name</h6>
+                                                    </div>
+                                                </a>
                                             </div>
-                                        </a>
-                                    </div>
                                 }
                             </div>
                         </div>
