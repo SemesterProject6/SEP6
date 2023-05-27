@@ -4,50 +4,54 @@
 @inject IMovieService MovieService
 @inject NavigationManager NavigationManager
 
-<h3>Movies</h3>
-<input type="text" @bind="UserInput" />
-<p>You entered: @UserInput</p>
-<button @onclick="SubmitForm">Submit</button>
+<MudGrid Justify="Justify.Center" Style="align-items:center; display: flex;">
+        <MudItem xs="3">
+            <MudSelect T="FilterCat" Label="Filter" ValueChanged="ChangeMovieFilter" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@FilterCat.NowPlaying">Now Playing</MudSelectItem>
+                <MudSelectItem Value="@FilterCat.Popular" >Popular</MudSelectItem>
+                <MudSelectItem Value="@FilterCat.Upcomning">Upcoming</MudSelectItem>
+             </MudSelect>
+        </MudItem>
+        <MudItem xs="6">
+              <MudTextField @bind-Value="UserInput" Clearable="true" Label="Search" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="3">
+           <MudButton OnClick="@SubmitForm" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Search" Size="Size.Large" FullWidth="true" Color="Color.Primary">Search</MudButton>
+        </MudItem>
+    </MudGrid>
 @if (movieList.Movies != null)
-{
-<MudGrid>
-    <MudItem xs="2">
-
-    </MudItem>
-    <MudItem xs="10">
-        <MudGrid>
-         @foreach (var m in movieList.Movies)
-         {
-            <MudItem xs="6" md="3">
-                 <MudCard style="cursor: pointer;" @onclick="() => MovieSelected(m.Id)">
-                    <MudCardMedia Image="@GetMoviePoster(m.PosterRoute)" Height="300" />
-                    <MudCardContent>
-                        <MudText Typo="Typo.h6">@m.Title</MudText>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-         }
-        </MudGrid>
-            <div class="d-flex flex-column align-center">
-                <MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@currentPage"  onchange="@SubmitForm()" />
+    {
+        <MudItem xs="12">
+            <MudGrid>
+                @foreach (var m in movieList.Movies)
+                {
+                    <MudItem xs="6" md="3">
+                        <MudCard style="cursor: pointer;" @onclick="() => MovieSelected(m.Id)">
+                            <MudCardMedia Image="@GetMoviePoster(m.PosterRoute)" Height="300" />
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@m.Title</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+                <div class="d-flex flex-column align-center" style="margin:8px;">
+            <MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@currentPage"  onchange="@SubmitForm()" />
             </div>
-    </MudItem>   
-</MudGrid>
-}
+        </MudItem>   
+    }
 
 @code {
-    private List<Movie> someMovies = new List<Movie>();
-    private Movie someMovie = new Movie();
 
     private ListOfMovies movieList = new ListOfMovies();
-    private int movieId = 15;
     public string UserInput { get; set; } = "";
     public int currentPage = 1;
     public int totalPages;
+    private FilterCat filterValue { get; set; } = FilterCat.NowPlaying;
 
     protected override async Task OnInitializedAsync()
     {
-        someMovie = await GetMovie(movieId);
+        movieList = await GetNowPlayingMovies(currentPage);
     }
 
     private async Task<Movie> GetMovie(int id)
@@ -63,8 +67,77 @@
         return result;
     }
 
+    private async Task<ListOfMovies> GetNowPlayingMovies(int page)
+    {
+        try
+        {
+            var result = await MovieService.GetNowPlayingMovies(page);
+            currentPage = result.CurrentPage;
+            totalPages = result.TotalPage;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to get now playing movies: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<ListOfMovies> GetPopularMovies(int page)
+    {
+        try
+        {
+            var result = await MovieService.GetPopularMovies(page);
+            currentPage = result.CurrentPage;
+            totalPages = result.TotalPage;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to get popular movies: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task<ListOfMovies> GetUpcomingMovies(int page)
+    {
+        try
+        {
+            var result = await MovieService.GetUpcomingMovies(page);
+            currentPage = result.CurrentPage;
+            totalPages = result.TotalPage;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to get upcoming movies: {ex.Message}");
+            return null;
+        }
+    }
+
+    private async Task ChangeMovieFilter(FilterCat filter)
+    {
+        switch (filter)
+        {
+            case FilterCat.NowPlaying:
+                movieList = await GetNowPlayingMovies(currentPage);
+                break;
+            case FilterCat.Popular:
+                movieList = await GetPopularMovies(currentPage);
+                break;
+            case FilterCat.Upcomning:
+                movieList = await GetUpcomingMovies(currentPage);
+                break;
+            default:
+                //
+                break;
+        }
+    }
+
+
     private async Task SubmitForm()
     {
+        if (UserInput == "") return;
         movieList = await SearchMovie(currentPage, UserInput);
     }
 
@@ -78,6 +151,13 @@
     {
         string moviePoster = "http://image.tmdb.org/t/p/w500/";
         return moviePoster + path;
+    }
+
+    enum FilterCat
+    {
+        NowPlaying,
+        Popular,
+        Upcomning
     }
 
 }
