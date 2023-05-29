@@ -5,8 +5,12 @@ namespace SEP6.Data.Movies
 {
     public class MovieService : IMovieService
     {
-
+#if DEBUG
         string url = "https://localhost:7178/movie";
+#else
+       
+        string url = "https://moviesep6api.azurewebsites.net/movie";
+#endif
 
         HttpClient client;
         private int movieId = 0;

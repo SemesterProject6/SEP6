@@ -6,7 +6,12 @@ namespace SEP6.Data.Users
 {
     public class UserService : IUserService
     {
+#if DEBUG
         string url = "https://localhost:7178/user";
+#else
+       
+        string url = "https://moviesep6api.azurewebsites.net/user";
+#endif
         private int userId;
         HttpClient client;
 

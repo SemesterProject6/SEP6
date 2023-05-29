@@ -5,7 +5,12 @@ namespace SEP6.Data.Actors
 {
     public class ActorService : IActorService
     {
+#if DEBUG
         string url = "https://localhost:7178/actor";
+#else
+       
+        string url = "https://moviesep6api.azurewebsites.net/actor";
+#endif
         HttpClient client;
         private int actorId = 0;
 
