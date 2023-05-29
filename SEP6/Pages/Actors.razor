@@ -3,6 +3,7 @@
 @using SEP6.Models;
 @inject IActorService ActorService
 @inject NavigationManager NavigationManager
+<PageTitle>Actors</PageTitle>
 
 <MudGrid Justify="Justify.Center" Style="align-items:center; display: flex;">
     <MudItem xs="9">
@@ -34,12 +35,18 @@
                     </MudItem>
                 }
             </MudGrid>
+            @if (actorList?.CurrentPage < actorList?.TotalPages)
+            {
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary" @onclick="LoadNextPage">Load More</button>
+                </div>
+            }
         }
-        @if (actorList?.CurrentPage < actorList?.TotalPages)
+        else
         {
-            <div class="text-center mt-4">
-                <button class="btn btn-primary" @onclick="LoadNextPage">Load More</button>
-            </div>
+            <MudGrid Justify="Justify.Center">
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            </MudGrid>
         }
     </MudItem>
 </MudGrid>

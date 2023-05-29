@@ -6,12 +6,12 @@
 @inject NavigationManager NavigationManager
 @inject IUserService UserService
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="MyCustomTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar>
+    <MudAppBar Fixed="true">
         <AuthorizeView>
            <NotAuthorized Context="NotAuth">
                <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Login" Href="/Login">Login</MudButton>
@@ -21,9 +21,9 @@
             </Authorized>
         </AuthorizeView>
         <MudSpacer />
-        <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.Home" Href="/">Home</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.TheaterComedy" Href="/Actors">Actors</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.LocalMovies" Href="/Movies">Movies</MudButton>
+        <MudButton Variant="Variant.Text" Style="margin-inline:4px;" Size="Size.Large" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.Home" Href="/">Home</MudButton>
+        <MudButton Variant="Variant.Text" Style="margin-inline:4px;" Size="Size.Large" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.TheaterComedy" Href="/Actors">Actors</MudButton>
+        <MudButton Variant="Variant.Text" Style="margin-inline:4px;" Size="Size.Large" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.LocalMovies" Href="/Movies">Movies</MudButton>
         <MudSpacer />
         <AuthorizeView Context="NotAuth">
             <Authorized>
@@ -32,8 +32,8 @@
             </Authorized>
         </AuthorizeView>
         <MudToggleIconButton @bind-Toggled="@_isDarkMode"
-            Icon="@Icons.Material.Filled.Cloud" Color="@Color.Secondary" Title="On"
-            ToggledIcon="@Icons.Material.Filled.WbSunny" ToggledColor="@Color.Tertiary" ToggledTitle="Off" />
+                             Icon="@Icons.Material.Filled.DarkMode" Color="@Color.Tertiary" Title="On"
+                             ToggledIcon="@Icons.Material.Filled.WbSunny" ToggledColor="@Color.Tertiary" ToggledTitle="Off" />
     </MudAppBar>
     
     <MudMainContent>
@@ -61,9 +61,9 @@
             {
                 Console.WriteLine($"{user.Identity.Name} is authenticated.");
             }
-            
+
         }
-            
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -111,13 +111,18 @@
         {
             Palette = new PaletteLight()
             {
-                Primary = Colors.Blue.Default,
-                Secondary = Colors.Green.Accent4,
-                AppbarBackground = Colors.Red.Default,
+                Primary = Colors.Pink.Lighten1,
+                Secondary = Colors.Teal.Lighten1,
+                AppbarBackground = "rgba(255, 247, 255, 0.6)",
+                Tertiary = Colors.BlueGrey.Darken2
             },
             PaletteDark = new PaletteDark()
             {
-                Primary = Colors.Blue.Lighten1
+                Primary = Colors.Pink.Darken2,
+                Secondary = Colors.Teal.Lighten2,
+                AppbarBackground = "rgba(77, 85, 95, 0.7)",
+                Tertiary = Colors.Yellow.Lighten2
+
             }
 
         };
