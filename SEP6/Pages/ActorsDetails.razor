@@ -125,6 +125,10 @@ else
 
     public string GetActorProfile(string path)
     {
+        if (string.IsNullOrEmpty(path))
+        {
+            return "Images/NoUserImage.jpg";
+        }
         string profileUrl = "http://image.tmdb.org/t/p/w500/";
         return profileUrl + path;
     }
@@ -137,15 +141,11 @@ else
 
     public string GetMoviePoster(string path)
     {
-        if (!string.IsNullOrEmpty(path))
+        if (string.IsNullOrEmpty(path))
         {
-            string posterUrl = "http://image.tmdb.org/t/p/w500/";
-            return posterUrl + path;
+            return  "/Images/NoImage.png";           
         }
-        else
-        {
-            string defaultImage = "/Images/NoImage.png";
-            return defaultImage;
-        }
+        string posterUrl = "http://image.tmdb.org/t/p/w500/";
+        return posterUrl + path;
     }
 }
