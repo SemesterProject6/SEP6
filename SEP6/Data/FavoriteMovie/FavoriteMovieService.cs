@@ -6,7 +6,12 @@ namespace SEP6.Data.FavoriteMovie
 {
     public class FavoriteMovieService : IFavoriteMovieService
     {
+#if DEBUG
         string url = "https://localhost:7178/FavoriteMovie";
+#else
+       
+        string url = "https://moviesep6api.azurewebsites.net/FavoriteMovie";
+#endif
         HttpClient client;
 
         public FavoriteMovieService()
