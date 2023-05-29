@@ -4,20 +4,22 @@
 @inject IActorService ActorService
 @inject NavigationManager NavigationManager
 
-<h3>Popular actors</h3>
-<input type="text" @bind="UserInput" />
-<p>You entered: @UserInput</p>
-<button @onclick="SubmitForm">Submit</button>
-<MudGrid>
-    <MudItem xs="12" md="2">
+<MudGrid Justify="Justify.Center" Style="align-items:center; display: flex;">
+    <MudItem xs="9">
+        <MudTextField @bind-Value="UserInput" Clearable="true" Label="Search" Variant="Variant.Outlined" />
     </MudItem>
-    <MudItem xs="12" md="10">
+    <MudItem xs="3">
+        <MudButton OnClick="@SubmitForm" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Search" Size="Size.Large" FullWidth="true" Color="Color.Primary">Search</MudButton>
+    </MudItem>
+</MudGrid>
+<MudGrid>
+    <MudItem xs="12" md="12">
         @if (actorList?.Actors != null)
         {
             <MudGrid>
                 @foreach (var actor in actorList.Actors)
                 {
-                    <MudItem xs="6" sm="4" md="3" xl="2">
+                    <MudItem xs="6" sm="4" md="2" xl="2">
                         <a href="/ActorsDetails/@actor.Id" class="text-decoration-none">
                             <MudCard Width="200px" style="cursor: pointer;">
                                 <MudCardMedia Image="@GetActorPoster(actor.ProfilePath)" Height="300" />
