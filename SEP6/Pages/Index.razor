@@ -3,7 +3,7 @@
 @using SEP6.Models;
 @inject IMovieService MovieService
 @inject NavigationManager NavigationManager
-<PageTitle>Index</PageTitle>
+<PageTitle>Home</PageTitle>
 
 <div class="container mt-5">
     @if (movieList.Movies != null)
@@ -17,7 +17,7 @@
                         <div class="carousel-item @(i == 0 ? "active" : "")">
                             <div class="row">
                                 @for (var j = i * 12; j < Math.Min((i * 12) + 12, movieList.Movies.Count); j++)
-                                {
+                                {                         
                                     <div class="col-md-2">
                                         <a href="/MoviesDetails/@movieList.Movies[j].Id" @onclick="() => MovieSelected(movieList.Movies[j].Id)" class="text-decoration-none">
                                             <div class="text-center">
@@ -44,6 +44,12 @@
                 <span class="sr-only">Next</span>
             </a>
         </div>
+    }
+    else
+    {
+        <MudGrid Justify="Justify.Center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudGrid>
     }
 </div>
 

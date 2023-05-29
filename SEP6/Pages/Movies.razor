@@ -3,6 +3,7 @@
 @using SEP6.Models;
 @inject IMovieService MovieService
 @inject NavigationManager NavigationManager
+<PageTitle>Movies</PageTitle>
 
 <MudGrid Justify="Justify.Center" Style="align-items:center; display: flex;">
         <MudItem xs="3">
@@ -38,8 +39,14 @@
                 <div class="d-flex flex-column align-center" style="margin:8px;">
             <MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@currentPage"  onchange="@SubmitForm()" />
             </div>
-        </MudItem>   
-    }
+    </MudItem>
+}
+else
+{
+    <MudGrid Justify="Justify.Center">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudGrid>
+}
 
 @code {
 
